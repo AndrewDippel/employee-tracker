@@ -40,7 +40,7 @@ function dataChoices() {
                 case 'View Employees':
                     return viewEmployees();
                 case 'Add Employees':
-                    return addEmployee();
+                    return addEmployees();
             }
         })
 
@@ -129,13 +129,11 @@ function viewEmployees() {
     });
 }
 
-function addEmployee() {
-   //const sql = `SELECT * FROM roles`;
+function addEmployees() {
+    const sql = `SELECT * FROM roles`;
 
-    db.query(sql, (err, rows) => {
-        //const filteredArr = rows.filter(dept => dept.id)
-       // const arr = rows.map(dept => dept.id);
-
+    db.query(sql, (err, res) => {
+        // const arr = rows.map(dept => dept.id);
         return inquirer.prompt([
             {
                 name: 'first_name',
@@ -151,11 +149,11 @@ function addEmployee() {
             .then(data => {
                 const sql = `INSERT INTO employees (first_name, last_name, manager)
         VALUES (?,?,?)`;
-                const params = [data.title, data.salary, arr];
-                db.query(sql, params, (err, rows) => {
+                const params = [data.first_name, data.last_name, data.manager];
+                db.query(sql, params, (err, res) => {
                     if (err) console.log(err);
-                    console.log('Role added')
-                    //console.table(data)
+                    console.log('Employee added')
+                    console.table(data)
                     dataChoices();
                 });
             })
