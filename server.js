@@ -52,6 +52,7 @@ function viewAllDepartments() {
 }
 
 function addDepartment() {
+    //mysql query to add department
     return inquirer.prompt([
         {
             name: 'department_name',
@@ -67,14 +68,13 @@ function addDepartment() {
                 dataChoices();
             });
         })
-    //mysql query to add department
+
 
 }
 
 function viewAllRole() {
-    //mysql query to get all departments
+    //mysql query to get all roles
     const sql = `SELECT * FROM roles JOIN departments ON roles.department_id = departments.id`;
-
     db.query(sql, (err, rows) => {
         console.table(rows)
         dataChoices();
