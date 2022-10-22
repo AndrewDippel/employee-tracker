@@ -24,7 +24,7 @@ function dataChoices() {
             type: 'list',
             name: 'choice',
             message: 'please select one of the following',
-            choices: ['View All Departments', 'Add Department', 'View all roles', 'Add role', 'View Employees', 'Add employee']
+            choices: ['View All Departments', 'Add Department', 'View all roles', 'Add role', 'View Employees', 'Add Employees']
         }
     ])
         .then(data => {
@@ -134,13 +134,15 @@ function viewEmployees() {
 }
 
 function addEmployees() {
-    if (err) console.log(err);
     //mysql query to add new employees
+    const sql = `SELECT * FROM employees`;
     db.query(sql, (err, rows) => {
-        if (err) console.log(err);
         // const arr = rows.map(dept => dept.id);
         return inquirer.prompt([
             {
+                name: 'id',
+                message: 'Employees id?',
+            }, {
                 name: 'first_name',
                 message: 'Employees first name?',
             }, {
@@ -153,9 +155,9 @@ function addEmployees() {
         ])
             .then(data => {
                 if (err) console.log(err);
-                const sql = `INSERT INTO employees (first_name, last_name, manager)
-        VALUES (?,?,?)`;
-                const params = [data.first_name, data.last_name, data.manager];
+                const sql = `INSERT INTO employees (id, first_name, last_name, manager)
+        VALUES (?,?,?,?)`;
+                const params = [data.id, data.first_name, data.last_name, data.manager];
                 db.query(sql, params, (err, rows) => {
                     if (err) console.log(err);
                     console.log('Employee added')
