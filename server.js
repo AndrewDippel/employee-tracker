@@ -95,16 +95,17 @@ function addRole() {
             }, {
                 type: 'list',
                 name: 'choice',
-                message: 'departments',
+                message: 'role department',
                 choices: rows
             }
         ])
             .then(data => {
-                const sql = `INSERT INTO roles (title, salary, choice)
+                const sql = `INSERT INTO roles (title, salary, department_id)
         VALUES (?)`;
                 const params = [data.title, data.salary, data.choice];
                 db.query(sql, params, (err, rows) => {
                     console.log('Role added')
+                    console.table(rows)
                     dataChoices();
                 });
             })
