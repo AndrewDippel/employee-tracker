@@ -87,6 +87,7 @@ function viewAllRole() {
 }
 
 function addRole() {
+    //mysql query to add new role
     const sql = `SELECT * FROM departments`;
 
     db.query(sql, (err, rows) => {
@@ -94,6 +95,9 @@ function addRole() {
 
         return inquirer.prompt([
             {
+                name: 'id',
+                message: 'employee id',
+            }, {
                 name: 'title',
                 message: 'role title',
             }, {
@@ -130,9 +134,10 @@ function viewEmployees() {
 }
 
 function addEmployees() {
-    const sql = `SELECT * FROM roles`;
-
-    db.query(sql, (err, res) => {
+    if (err) console.log(err);
+    //mysql query to add new employees
+    db.query(sql, (err, rows) => {
+        if (err) console.log(err);
         // const arr = rows.map(dept => dept.id);
         return inquirer.prompt([
             {
@@ -147,10 +152,11 @@ function addEmployees() {
             }
         ])
             .then(data => {
+                if (err) console.log(err);
                 const sql = `INSERT INTO employees (first_name, last_name, manager)
         VALUES (?,?,?)`;
                 const params = [data.first_name, data.last_name, data.manager];
-                db.query(sql, params, (err, res) => {
+                db.query(sql, params, (err, rows) => {
                     if (err) console.log(err);
                     console.log('Employee added')
                     console.table(data)
