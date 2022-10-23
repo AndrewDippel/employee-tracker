@@ -117,7 +117,6 @@ function addRole() {
                 db.query(sql, params, (err, rows) => {
                     if (err) console.log(err);
                     console.log('Role added')
-                    //console.table(data)
                     dataChoices();
                 });
             })
@@ -128,6 +127,7 @@ function viewEmployees() {
     //mysql query to get all employees
     const sql = `SELECT * FROM employees JOIN roles ON employees.role_id = roles.id`;
     db.query(sql, (err, rows) => {
+        if (err) console.log(err);
         console.table(rows)
         dataChoices();
     });
@@ -135,9 +135,9 @@ function viewEmployees() {
 
 function addEmployees() {
     //mysql query to add new employees
-    const sql = `SELECT * FROM employees`;
+    const sql = `SELECT * FROM roles`;
     db.query(sql, (err, rows) => {
-        // const arr = rows.map(dept => dept.id);
+        //const arr = rows.map(dept => dept.id);
         return inquirer.prompt([
             {
                 name: 'id',
@@ -149,21 +149,23 @@ function addEmployees() {
                 name: 'last_name',
                 message: 'Employees last name?',
             }, {
-                name: 'manager',
+                name: 'manager_id',
                 message: 'Manager the employee will report to?',
             }
         ])
             .then(data => {
-                if (err) console.log(err);
-                const sql = `INSERT INTO employees (id, first_name, last_name, manager)
+                const sql = `INSERT INTO employees (id, first_name, last_name, manager_id)
         VALUES (?,?,?,?)`;
-                const params = [data.id, data.first_name, data.last_name, data.manager];
+                const params = [data.id, data.first_name, data.last_name, data.manager_id];
                 db.query(sql, params, (err, rows) => {
                     if (err) console.log(err);
                     console.log('Employee added')
                     console.table(data)
                     dataChoices();
                 });
+            })
+            .catch(err => {
+                console.error(err);
             })
     });
 }
