@@ -92,8 +92,11 @@ function addRole() {
     const sql = `SELECT * FROM departments`;
 
     db.query(sql, (err, rows) => {
-        const arr = rows.map(dept => dept.id);
-
+        let departments = rows;
+        const departmentChoices = departments.map(({ id, name }) => ({
+            name: name,
+            value: id
+        }));
         return inquirer.prompt([
             {
                 name: 'title',
@@ -105,13 +108,13 @@ function addRole() {
                 type: 'list',
                 name: 'choice',
                 message: 'role department',
-                choices: rows
+                choices: departmentChoices
             }
         ])
             .then(data => {
                 const sql = `INSERT INTO roles (title, salary, department_id)
         VALUES (?,?,?)`;
-                const params = [data.title, data.salary, arr];
+                const params = [data.title, data.salary, data.choice];
                 db.query(sql, params, (err, rows) => {
                     if (err) console.log(err);
                     console.log('Role added')
@@ -135,7 +138,12 @@ function addEmployees() {
     //mysql query to add new employees
     const sql = `SELECT * FROM roles`;
     db.query(sql, (err, rows) => {
-        const roles = rows.map(rol => rol.title);
+        const arr = rows.map(role => role.id)
+        let roles = rows;
+        const roleChoices = roles.map(({ title }) => ({
+            title: title,
+            value: title
+        }));
         return inquirer.prompt([
             {
                 name: 'first_name',
@@ -144,24 +152,33 @@ function addEmployees() {
                 name: 'last_name',
                 message: 'Employees last name?',
             }, {
+                type: 'list',
                 name: 'manager_id',
                 message: 'Manager the employee will report to?',
+                choices: [1, 2, 3, 4],
             }, {
                 type: 'list',
                 name: 'role_id',
                 message: 'what role will this employee be under',
-                choices: roles,
+                choices: roleChoices,
             }
         ])
             .then(data => {
                 const sql = `INSERT INTO employees (first_name, last_name, manager_id, role_id)
         VALUES (?,?,?,?)`;
-                const params = [data.first_name, data.last_name, data.manager_id, roles.id];
+
+                let role_id = null;
+                for (keyEl in arr) {
+                    if (rows[keyEl].title === data.role) {
+                        role_id = parseInt(keyEl) + 1
+                    }
+                }
+                const params = [data.first_name, data.last_name, data.manager_id, data.role_id,];
                 db.query(sql, params, (err, newEmp) => {
                     console.log(rows);
                     if (err) console.log(err);
                     console.log('Employee added')
-                    console.table(newEmp)
+                    //console.table(newEmp)
                     dataChoices();
                 });
             })
