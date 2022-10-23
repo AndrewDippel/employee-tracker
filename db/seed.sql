@@ -19,4 +19,4 @@ VALUES('Tim', 'Tam', 1, 3),
 ('Roronoa', 'Zoro', 1, 3),
 ('Asta', 'Staria', 4, null),
 ('Akame', 'Murasame', 6, 2),
-('Robin', 'Nico', 5, 1),
+('Robin', 'Nico', 5, 1);

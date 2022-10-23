@@ -136,13 +136,19 @@ function viewEmployees() {
 
 function addEmployees() {
     //mysql query to add new employees
-    const sql = `SELECT * FROM roles`;
+    const sql = `SELECT * FROM roles, employees`;
     db.query(sql, (err, rows) => {
+        const arr2 = rows.map(first_name => employee.first_name)
+        let employee = rows;
+        const employeeList = employee.map(({ id, first_name }) => ({
+            name: first_name,
+            value: id
+        }));
         const arr = rows.map(role => role.id)
         let roles = rows;
-        const roleChoices = roles.map(({ title }) => ({
-            title: title,
-            value: title
+        const roleChoices = roles.map(({ id, title }) => ({
+            name: title,
+            value: id
         }));
         return inquirer.prompt([
             {
@@ -154,8 +160,8 @@ function addEmployees() {
             }, {
                 type: 'list',
                 name: 'manager_id',
-                message: 'Manager the employee will report to?',
-                choices: [1, 2, 3, 4],
+                message: 'please select the employees manager',
+                choices: employeeList,
             }, {
                 type: 'list',
                 name: 'role_id',
@@ -171,6 +177,12 @@ function addEmployees() {
                 for (keyEl in arr) {
                     if (rows[keyEl].title === data.role) {
                         role_id = parseInt(keyEl) + 1
+                    }
+                }
+                let manager_id = null;
+                for (keyEl in arr2) {
+                    if (rows[keyEl].title === data.first_name) {
+                        manager_id = parseInt(keyEl) + 1
                     }
                 }
                 const params = [data.first_name, data.last_name, data.manager_id, data.role_id,];
