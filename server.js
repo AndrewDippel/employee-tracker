@@ -1,6 +1,7 @@
 const mysql2 = require('mysql2');
 const inquirer = require('inquirer');
 const consoleTable = require('console.table');
+const { listenerCount } = require('process');
 
 const db = mysql2.createConnection(
     {
@@ -149,8 +150,10 @@ function addEmployees() {
                 name: 'manager_id',
                 message: 'Manager the employee will report to?',
             }, {
+                type: 'list',
                 name: 'role_id',
-                message: rows,
+                message: 'what role will this employee be under',
+                choices: rows,
             }
         ])
             .then(data => {
@@ -158,7 +161,7 @@ function addEmployees() {
         VALUES (?,?,?,?)`;
                 const params = [data.first_name, data.last_name, data.manager_id, data.role_id];
                 db.query(sql, params, (err, rows) => {
-                    console.log(roles);
+                    console.log(rows);
                     if (err) console.log(err);
                     console.log('Employee added')
                     console.table(data)
