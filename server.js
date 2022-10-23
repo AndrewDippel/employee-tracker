@@ -174,6 +174,7 @@ function addEmployees() {
             .then(data => {
                 const sql = `INSERT INTO employees (first_name, last_name, manager_id, role_id)
         VALUES (?,?,?,?)`;
+                console.log(roleChoices);
 
                 let role_id = null;
                 for (keyEl in arr) {
@@ -237,28 +238,27 @@ function updateEmployeeRole() {
             }
         ])
             .then(data => {
-                const sql = `UPDATE employee SET role_id = ? WHERE employee = ?`
-                [Response.role_id, Response.first_name];
-
+                const sql = `UPDATE employees SET role_id = ? WHERE id = ?`;
                 let role_id = null;
                 for (keyEl in arr2) {
-                    if (rows[keyEl].title === data.role) {
+                    if (rows[keyEl].title === data.roles) {
                         role_id = parseInt(keyEl) + 1
                     }
                 }
-                let manager_id = null;
+                let employee_id = null;
                 for (keyEl in arr) {
-                    if (rows[keyEl].first_name === data.first_name) {
-                        manager_id = parseInt(keyEl) + 1
+                    if (rows[keyEl].first_name === data.employee) {
+                        employee_id = parseInt(keyEl) + 1
                     }
                 }
-                const params = [data.title, data.salary, data.choice];
+                const params = [role_id, employee_id];
                 db.query(sql, params, (err, rows) => {
                     if (err) console.log(err);
-                    console.log('Role added')
+                    console.log('Employee role updated')
                     dataChoices();
                 });
-            })
+            }
+            )
     });
 }
 
