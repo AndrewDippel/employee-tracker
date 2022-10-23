@@ -1,6 +1,6 @@
 const mysql2 = require('mysql2');
 const inquirer = require('inquirer');
-const { filter } = require('rxjs');
+const consoleTable = require('console.table');
 
 const db = mysql2.createConnection(
     {
@@ -137,12 +137,9 @@ function addEmployees() {
     //mysql query to add new employees
     const sql = `SELECT * FROM roles`;
     db.query(sql, (err, rows) => {
-        //const arr = rows.map(dept => dept.id);
+        const roles = rows.map(rol => rol.title);
         return inquirer.prompt([
             {
-                name: 'id',
-                message: 'Employees id?',
-            }, {
                 name: 'first_name',
                 message: 'Employees first name?',
             }, {
@@ -151,13 +148,17 @@ function addEmployees() {
             }, {
                 name: 'manager_id',
                 message: 'Manager the employee will report to?',
+            }, {
+                name: 'role_id',
+                message: rows,
             }
         ])
             .then(data => {
-                const sql = `INSERT INTO employees (id, first_name, last_name, manager_id)
+                const sql = `INSERT INTO employees (first_name, last_name, manager_id, role_id)
         VALUES (?,?,?,?)`;
-                const params = [data.id, data.first_name, data.last_name, data.manager_id];
+                const params = [data.first_name, data.last_name, data.manager_id, data.role_id];
                 db.query(sql, params, (err, rows) => {
+                    console.log(roles);
                     if (err) console.log(err);
                     console.log('Employee added')
                     console.table(data)
