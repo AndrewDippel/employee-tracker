@@ -96,9 +96,6 @@ function addRole() {
 
         return inquirer.prompt([
             {
-                name: 'id',
-                message: 'employee id',
-            }, {
                 name: 'title',
                 message: 'role title',
             }, {
@@ -153,18 +150,18 @@ function addEmployees() {
                 type: 'list',
                 name: 'role_id',
                 message: 'what role will this employee be under',
-                choices: rows,
+                choices: roles,
             }
         ])
             .then(data => {
                 const sql = `INSERT INTO employees (first_name, last_name, manager_id, role_id)
         VALUES (?,?,?,?)`;
-                const params = [data.first_name, data.last_name, data.manager_id, data.role_id];
-                db.query(sql, params, (err, rows) => {
+                const params = [data.first_name, data.last_name, data.manager_id, roles.id];
+                db.query(sql, params, (err, newEmp) => {
                     console.log(rows);
                     if (err) console.log(err);
                     console.log('Employee added')
-                    console.table(data)
+                    console.table(newEmp)
                     dataChoices();
                 });
             })
@@ -173,6 +170,7 @@ function addEmployees() {
             })
     });
 }
+
 
 init()
 
