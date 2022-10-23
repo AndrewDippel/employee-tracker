@@ -25,7 +25,7 @@ function dataChoices() {
             type: 'list',
             name: 'choice',
             message: 'please select one of the following',
-            choices: ['View All Departments', 'Add Department', 'View all roles', 'Add role', 'View Employees', 'Add Employees']
+            choices: ['View All Departments', 'Add Department', 'View all roles', 'Add role', 'View Employees', 'Add Employees', 'Edit Employee role']
         }
     ])
         .then(data => {
@@ -42,6 +42,8 @@ function dataChoices() {
                     return viewEmployees();
                 case 'Add Employees':
                     return addEmployees();
+                case 'Edit Employee role':
+                    return updateEmployeeRole();
             }
         })
 
@@ -138,9 +140,9 @@ function addEmployees() {
     //mysql query to add new employees
     const sql = `SELECT * FROM roles, employees`;
     db.query(sql, (err, rows) => {
-        const arr2 = rows.map(first_name => employee.first_name)
-        let employee = rows;
-        const employeeList = employee.map(({ id, first_name }) => ({
+        const arr2 = rows.map(employee => employee.first_name)
+        let employees = rows;
+        const employeeList = employees.map(({ id, first_name }) => ({
             name: first_name,
             value: id
         }));
@@ -181,7 +183,7 @@ function addEmployees() {
                 }
                 let manager_id = null;
                 for (keyEl in arr2) {
-                    if (rows[keyEl].title === data.first_name) {
+                    if (rows[keyEl].first_name === data.first_name) {
                         manager_id = parseInt(keyEl) + 1
                     }
                 }
@@ -196,6 +198,66 @@ function addEmployees() {
             })
             .catch(err => {
                 console.error(err);
+            })
+    });
+}
+
+function updateEmployeeRole() {
+
+    const sql = `SELECT * FROM employees, roles`;
+
+    db.query(sql, (err, rows) => {
+
+        const arr = rows.map(employee => employee.first_name)
+        let employees = rows;
+        const employeeList = employees.map(({ id, first_name }) => ({
+            name: first_name,
+            value: id
+        }));
+
+
+        const arr2 = rows.map(role => role.id)
+        let roles = rows;
+        const roleChoices = roles.map(({ id, title }) => ({
+            name: title,
+            value: id
+        }));
+
+        return inquirer.prompt([
+            {
+                type: 'list',
+                name: 'employee',
+                message: 'what employee do you want to update?',
+                choices: employeeList
+            }, {
+                type: 'list',
+                name: 'roles',
+                message: 'please select a new role',
+                choices: roleChoices
+            }
+        ])
+            .then(data => {
+                const sql = `UPDATE employee SET role_id = ? WHERE employee = ?`
+                [Response.role_id, Response.first_name];
+
+                let role_id = null;
+                for (keyEl in arr2) {
+                    if (rows[keyEl].title === data.role) {
+                        role_id = parseInt(keyEl) + 1
+                    }
+                }
+                let manager_id = null;
+                for (keyEl in arr) {
+                    if (rows[keyEl].first_name === data.first_name) {
+                        manager_id = parseInt(keyEl) + 1
+                    }
+                }
+                const params = [data.title, data.salary, data.choice];
+                db.query(sql, params, (err, rows) => {
+                    if (err) console.log(err);
+                    console.log('Role added')
+                    dataChoices();
+                });
             })
     });
 }
