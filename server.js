@@ -213,14 +213,14 @@ function updateEmployeeRole() {
         roles = rows;
     })
     db.query(sql, (err, rows) => {
-        const arr2 = rows.map(employee => employee.first_name)
+        //const arr2 = rows.map(employee => employee.first_name)
         let employees = rows;
         const employeeList = employees.map(({ id, first_name }) => ({
             name: first_name,
             value: id
         }));
         //const arr = rows.map(role => role.id)
-
+        console.log(roles);
         const roleChoices = roles.map(({ id, title }) => ({
             name: title,
             value: id
@@ -233,15 +233,16 @@ function updateEmployeeRole() {
                 choices: employeeList
             }, {
                 type: 'list',
-                name: 'roles',
+                name: 'role_id',
                 message: 'please select a new role',
                 choices: roleChoices
             }
         ])
             .then(data => {
+                console.log(data.role_id)
                 const sql = `UPDATE employees SET role_id = ? WHERE id = ?`;
 
-                const params = [role_id, employee_id];
+                const params = [data.role_id, data.employee];
                 db.query(sql, params, (err, rows) => {
                     if (err) console.log(err);
                     console.log('Employee role updated')
