@@ -138,7 +138,7 @@ function viewEmployees() {
 
 function addEmployees() {
     //mysql query to add new employees
-    const sql = `SELECT * FROM roles, employees`;
+    const sql = `SELECT * FROM employees`;
     db.query(sql, (err, rows) => {
         const arr2 = rows.map(employee => employee.first_name)
         let employees = rows;
@@ -174,8 +174,9 @@ function addEmployees() {
             .then(data => {
                 const sql = `INSERT INTO employees (first_name, last_name, manager_id, role_id)
         VALUES (?,?,?,?)`;
-                console.log(roleChoices);
                 console.log(employeeList);
+                console.log(roleChoices);
+
 
                 let role_id = null;
                 for (keyEl in arr) {
