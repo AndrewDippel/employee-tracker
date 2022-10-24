@@ -140,15 +140,15 @@ function addEmployees() {
     //mysql query to add new employees
     const sql = `SELECT * FROM roles, employees`;
     db.query(sql, (err, rows) => {
-        const arr2 = rows.map(employee => employee.first_name)
+        const arr2 = rows.forEach(employee => employee.first_name)
         let employees = rows;
-        const employeeList = employees.map(({ id, first_name }) => ({
+        const employeeList = employees.forEach(({ id, first_name }) => ({
             name: first_name,
             value: id
         }));
-        const arr = rows.map(role => role.id)
+        const arr = rows.forEach(role => role.id)
         let roles = rows;
-        const roleChoices = roles.map(({ id, title }) => ({
+        const roleChoices = roles.forEach(({ id, title }) => ({
             name: title,
             value: id
         }));
@@ -175,6 +175,7 @@ function addEmployees() {
                 const sql = `INSERT INTO employees (first_name, last_name, manager_id, role_id)
         VALUES (?,?,?,?)`;
                 console.log(roleChoices);
+                console.log(employeeList);
 
                 let role_id = null;
                 for (keyEl in arr) {
@@ -209,17 +210,17 @@ function updateEmployeeRole() {
 
     db.query(sql, (err, rows) => {
 
-        const arr = rows.map(employee => employee.first_name)
+        const arr = rows.forEach(employee => employee.first_name)
         let employees = rows;
-        const employeeList = employees.map(({ id, first_name }) => ({
+        const employeeList = employees.forEach(({ id, first_name }) => ({
             name: first_name,
             value: id
         }));
 
 
-        const arr2 = rows.map(role => role.id)
+        const arr2 = rows.forEach(role => role.id)
         let roles = rows;
-        const roleChoices = roles.map(({ id, title }) => ({
+        const roleChoices = roles.forEach(({ id, title }) => ({
             name: title,
             value: id
         }));
