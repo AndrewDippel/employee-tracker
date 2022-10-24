@@ -25,7 +25,7 @@ function dataChoices() {
             type: 'list',
             name: 'choice',
             message: 'please select one of the following',
-            choices: ['View All Departments', 'Add Department', 'View all roles', 'Add role', 'View Employees', 'Add Employees', 'Edit Employee role']
+            choices: ['View All Departments', 'Add Department', 'View all roles', 'Add role', 'View Employees', 'Add Employees', 'Edit Employee role', 'View Employee by Manager', 'View Employee by department']
         }
     ])
         .then(data => {
@@ -44,6 +44,10 @@ function dataChoices() {
                     return addEmployees();
                 case 'Edit Employee role':
                     return updateEmployeeRole();
+                case 'View Employee by Manager':
+                    return viewEmployeesByManager();
+                case 'View Employee by department':
+                    return viewEmployeesByDepartment();
             }
         })
 
@@ -139,6 +143,13 @@ function viewEmployees() {
 function addEmployees() {
     //mysql query to add new employees
     const sql = `SELECT * FROM employees`;
+    const roleSql = `SELECT * FROM roles`;
+    let roles;
+
+    db.query(roleSql, (err, rows) => {
+        console.log(rows, 'hi');
+        roles = rows;
+    })
     db.query(sql, (err, rows) => {
         const arr2 = rows.map(employee => employee.first_name)
         let employees = rows;
@@ -146,8 +157,8 @@ function addEmployees() {
             name: first_name,
             value: id
         }));
-        const arr = rows.map(role => role.id)
-        let roles = rows;
+        //const arr = rows.map(role => role.id)
+
         const roleChoices = roles.map(({ id, title }) => ({
             name: title,
             value: id
@@ -176,20 +187,6 @@ function addEmployees() {
         VALUES (?,?,?,?)`;
                 console.log(employeeList);
                 console.log(roleChoices);
-
-
-                let role_id = null;
-                for (keyEl in arr) {
-                    if (rows[keyEl].title === data.role) {
-                        role_id = parseInt(keyEl) + 1
-                    }
-                }
-                let manager_id = null;
-                for (keyEl in arr2) {
-                    if (rows[keyEl].first_name === data.first_name) {
-                        manager_id = parseInt(keyEl) + 1
-                    }
-                }
                 const params = [data.first_name, data.last_name, data.manager_id, data.role_id,];
                 db.query(sql, params, (err, newEmp) => {
                     console.log(rows);
@@ -207,25 +204,27 @@ function addEmployees() {
 
 function updateEmployeeRole() {
 
-    const sql = `SELECT * FROM employees, roles`;
+    const sql = `SELECT * FROM employees`;
+    const roleSql = `SELECT * FROM roles`;
+    let roles;
 
+    db.query(roleSql, (err, rows) => {
+        console.log(rows, 'hi');
+        roles = rows;
+    })
     db.query(sql, (err, rows) => {
-
-        const arr = rows.map(employee => employee.first_name)
+        const arr2 = rows.map(employee => employee.first_name)
         let employees = rows;
         const employeeList = employees.map(({ id, first_name }) => ({
             name: first_name,
             value: id
         }));
+        //const arr = rows.map(role => role.id)
 
-
-        const arr2 = rows.map(role => role.id)
-        let roles = rows;
         const roleChoices = roles.map(({ id, title }) => ({
             name: title,
             value: id
         }));
-
         return inquirer.prompt([
             {
                 type: 'list',
@@ -241,18 +240,7 @@ function updateEmployeeRole() {
         ])
             .then(data => {
                 const sql = `UPDATE employees SET role_id = ? WHERE id = ?`;
-                let role_id = null;
-                for (keyEl in arr2) {
-                    if (rows[keyEl].title === data.roles) {
-                        role_id = parseInt(keyEl) + 1
-                    }
-                }
-                let employee_id = null;
-                for (keyEl in arr) {
-                    if (rows[keyEl].first_name === data.employee) {
-                        employee_id = parseInt(keyEl) + 1
-                    }
-                }
+
                 const params = [role_id, employee_id];
                 db.query(sql, params, (err, rows) => {
                     if (err) console.log(err);
@@ -264,6 +252,25 @@ function updateEmployeeRole() {
     });
 }
 
+function viewEmployeesByManager() {
+    //mysql query to get all employees
+    const sql = `SELECT * FROM employees JOIN roles ON employees.role_id = roles.id ORDER BY manager_id ASC`;
+    db.query(sql, (err, rows) => {
+        if (err) console.log(err);
+        console.table(rows)
+        dataChoices();
+    });
+}
+
+function viewEmployeesByDepartment() {
+    //mysql query to get all employees
+    const sql = `SELECT * FROM employees JOIN roles ON employees.role_id = roles.id ORDER BY title ASC`;
+    db.query(sql, (err, rows) => {
+        if (err) console.log(err);
+        console.table(rows)
+        dataChoices();
+    });
+}
 
 init()
 
